@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    {
+      "name": "fmt",
+      "version>=": "8.1.1#2"
+    },
+    {
+      "name": "expected-lite"
+    },
+    {
+      "name": "gsl-lite"
+    }
+  ]
+}
