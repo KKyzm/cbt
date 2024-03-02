@@ -7,7 +7,6 @@
 
 #include "bencode/detail/bvalue/accessors.hpp"
 #include "bencode/detail/decode_value.hpp"
-#include "fs.hh"
 #include "util.hh"
 
 TorrentParser::TorrentParser(std::string torrent_file) : _torrent_file(torrent_file) {

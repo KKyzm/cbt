@@ -8,7 +8,7 @@
 #include <random>
 #include <sstream>
 
-std::string read_file(const fs::path &path) {
+auto read_file(const fs::path &path) -> std::string {
   auto ifs = std::ifstream(path, std::ios::binary | std::ios::ate);
   auto pos = ifs.tellg();
   auto content = std::string(pos, '0');
@@ -17,13 +17,13 @@ std::string read_file(const fs::path &path) {
   return content;
 }
 
-std::string SHA1(std::string &data) {
+auto SHA1(std::string &data) -> std::string {
   CryptoPP::byte digest[CryptoPP::SHA1::DIGESTSIZE] = {0};
   CryptoPP::SHA1().CalculateDigest(digest, reinterpret_cast<CryptoPP::byte *>(data.data()), data.length());
   return std::string(reinterpret_cast<char *>(digest), CryptoPP::SHA1::DIGESTSIZE);
 }
 
-std::string to_hex(const std::string data) {
+auto to_hex(const std::string data) -> std::string {
   std::stringstream ss;
   ss << std::hex << std::setfill('0');
   for (auto c : data) {
@@ -32,7 +32,7 @@ std::string to_hex(const std::string data) {
   return ss.str();
 }
 
-std::string random_number(const size_t length) {
+auto random_number(const size_t length) -> std::string {
   std::random_device rd;   // Will be used to obtain a seed for the random number engine
   std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
   std::uniform_int_distribution<> distrib(1, 9);

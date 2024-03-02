@@ -6,12 +6,12 @@
 namespace fs = std::filesystem;
 
 // read and return all content of a file
-std::string read_file(const fs::path &path);
+auto read_file(const fs::path &path) -> std::string;
 
-std::string SHA1(std::string &data);
+auto SHA1(std::string &data) -> std::string;
 
 // convert string to hex repersenation
-std::string to_hex(const std::string data);
+auto to_hex(const std::string data) -> std::string;
 
 // genrate random numbers
-std::string random_number(const size_t length);
+auto random_number(const size_t length) -> std::string;

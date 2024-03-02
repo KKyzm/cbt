@@ -13,7 +13,7 @@
 PeerRetriever::PeerRetriever(std::string announce, std::string info_hash, std::string peer_id, size_t file_size)
     : _announce(announce), _info_hash(info_hash), _peer_id(peer_id), _file_size(file_size) {}
 
-std::vector<Peer> PeerRetriever::update_peers(size_t downloaded) {
+auto PeerRetriever::update_peers(size_t downloaded) -> std::vector<Peer> {
   cpr::Response r = cpr::Get(
       cpr::Url{_announce}, cpr::Authentication{"user", "pass", cpr::AuthMode::BASIC},
       cpr::Parameters{
@@ -31,7 +31,7 @@ std::vector<Peer> PeerRetriever::update_peers(size_t downloaded) {
   return decode_raw_peers(raw_peers);
 }
 
-std::vector<Peer> PeerRetriever::decode_raw_peers(std::string raw_peers) {
+auto PeerRetriever::decode_raw_peers(std::string raw_peers) -> std::vector<Peer> {
   auto res = std::vector<Peer>();
   assert(raw_peers.length() % 6 == 0);
   for (size_t i = 0; i < raw_peers.length(); i += 6) {

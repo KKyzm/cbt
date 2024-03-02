@@ -15,9 +15,9 @@ class PeerRetriever {
   PeerRetriever() = default;
   PeerRetriever(std::string announce, std::string info_hash, std::string peer_id, size_t file_size);
 
-  std::vector<Peer> update_peers(size_t downloaded);
+  auto update_peers(size_t downloaded) -> std::vector<Peer>;
 
-  size_t get_interval() { return _interval; }
+  auto get_interval() -> size_t { return _interval; }
 
  private:
   std::string _announce;
@@ -27,5 +27,5 @@ class PeerRetriever {
 
   size_t _interval;  // unit: second
 
-  std::vector<Peer> decode_raw_peers(std::string raw_peers);
+  auto decode_raw_peers(std::string raw_peers) -> std::vector<Peer>;
 };
