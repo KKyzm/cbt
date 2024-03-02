@@ -1,22 +1,17 @@
-#include "bencode/bencode.hpp"
+#include <cpr/cpr.h>
+#include <fmt/core.h>
+
+#include "torrent_client.hh"
+#include "util.hh"
 
 int main(int argc, char **argv) {
-  namespace bc = bencode;
+  auto para = client_para{
+      .torrent_file = "/home/yaniru/workshop/projects/cbt/res/debian-12.4.0-amd64-netinst.iso.torrent",
+      .output_dir = ".",
+      .log_dir = ".",
+  };
 
-  bc::bvalue b = bc::decode_value("l3:fooi2ee");
+  auto client = TorrentClient(para);
 
-  // check if the first list element is a string
-  if (holds_list(b) && holds_string(b[0])) {
-    std::cout << "success" << '\n';
-  }
-
-  // type tag based type check, return false
-  bc::holds_alternative<bc::btype::dict>(b);
-
-  // access the first element of the list "foo" and move it
-  // out of the bvalue into v1
-  std::string v1 = bc::get_string(std::move(b[0]));
-
-  // access the second element
-  std::size_t v2 = bc::get_integer(b[1]);
+  return 0;
 }

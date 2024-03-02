@@ -9,6 +9,13 @@
     },
     {
       "name": "gsl-lite"
+    },
+    {
+      "name": "cryptopp"
+    },
+    {
+      "name": "cpr",
+      "version>=": "1.10.5"
     }
   ]
 }
