@@ -5,7 +5,7 @@
 #include "bencode_parser.hh"
 #include "peer_retriever.hh"
 
-struct client_config {
+struct ClientConfig {
   std::string torrent_file;
   std::string output_dir;
   std::string log_dir;
@@ -13,19 +13,23 @@ struct client_config {
 
 class TorrentClient {
  public:
-  TorrentClient(client_config);
+  TorrentClient(ClientConfig);
 
   TorrentClient(const TorrentClient&) = delete;
   TorrentClient(TorrentClient&&) = delete;
   auto operator=(const TorrentClient&) -> TorrentClient& = delete;
   auto operator=(TorrentClient&&) -> TorrentClient& = delete;
 
+  // start download task
   void download();
 
  private:
-  std::string _peer_id;
-  client_config _conf;
+  std::string _client_id;
+  ClientConfig _conf;
   Torrent _torrent;
 
   PeerRetriever _retriever;
+
+  // update peers periodically according to `interval`
+  void PeerUpdater();
 };

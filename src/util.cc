@@ -17,9 +17,9 @@ auto read_file(const fs::path &path) -> std::string {
   return content;
 }
 
-auto SHA1(std::string &data) -> std::string {
+auto SHA1(const std::string &data) -> std::string {
   CryptoPP::byte digest[CryptoPP::SHA1::DIGESTSIZE] = {0};
-  CryptoPP::SHA1().CalculateDigest(digest, reinterpret_cast<CryptoPP::byte *>(data.data()), data.length());
+  CryptoPP::SHA1().CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte *>(data.data()), data.length());
   return std::string(reinterpret_cast<char *>(digest), CryptoPP::SHA1::DIGESTSIZE);
 }
 

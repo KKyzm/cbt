@@ -5,7 +5,7 @@
 #include "util.hh"
 
 auto main(int argc, char **argv) -> int {
-  auto para = client_config{
+  auto para = ClientConfig{
       .torrent_file = "/home/yaniru/workshop/projects/cbt/res/debian-12.4.0-amd64-netinst.iso.torrent",
       .output_dir = ".",
       .log_dir = ".",

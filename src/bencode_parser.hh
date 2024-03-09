@@ -13,7 +13,7 @@ namespace bc = bencode;
 
 struct TorrentInfo {
   size_t piece_length;
-  std::vector<std::string> pieces;
+  std::vector<std::string> pieces_hash;
   std::string name;
   size_t length;
 };

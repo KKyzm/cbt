@@ -27,7 +27,7 @@ auto TorrentParser::get_torrent() -> Torrent {
   auto pieces = bc::get_string(bc_info.at("pieces"));
   assert(pieces.length() % 20 == 0);
   for (size_t i = 0; i < pieces.length(); i += 20) {
-    torrent.info.pieces.push_back(pieces.substr(i, 20));
+    torrent.info.pieces_hash.push_back(pieces.substr(i, 20));
   }
 
   auto info_str = bc::encode(bc_info);

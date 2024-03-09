@@ -5,15 +5,12 @@
 #include <string>
 #include <vector>
 
-struct Peer {
-  std::string ip;
-  uint16_t port;
-};
+#include "peer.hh"
 
 class PeerRetriever {
  public:
   PeerRetriever() = default;
-  PeerRetriever(std::string announce, std::string info_hash, std::string peer_id, size_t file_size);
+  PeerRetriever(std::string announce, std::string info_hash, std::string client_id, size_t file_size);
 
   auto update_peers(size_t downloaded) -> std::vector<Peer>;
 
@@ -22,7 +19,7 @@ class PeerRetriever {
  private:
   std::string _announce;
   std::string _info_hash;
-  std::string _peer_id;
+  std::string _client_id;
   size_t _file_size;
 
   size_t _interval;  // unit: second

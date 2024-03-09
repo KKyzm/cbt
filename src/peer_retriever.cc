@@ -10,15 +10,15 @@
 
 #include "bencode_parser.hh"
 
-PeerRetriever::PeerRetriever(std::string announce, std::string info_hash, std::string peer_id, size_t file_size)
-    : _announce(announce), _info_hash(info_hash), _peer_id(peer_id), _file_size(file_size) {}
+PeerRetriever::PeerRetriever(std::string announce, std::string info_hash, std::string client_id, size_t file_size)
+    : _announce(announce), _info_hash(info_hash), _client_id(client_id), _file_size(file_size) {}
 
 auto PeerRetriever::update_peers(size_t downloaded) -> std::vector<Peer> {
   cpr::Response r = cpr::Get(
       cpr::Url{_announce}, cpr::Authentication{"user", "pass", cpr::AuthMode::BASIC},
       cpr::Parameters{
           {"info_hash", _info_hash},
-          {"peer_id", _peer_id},
+          {"peer_id", _client_id},
           {"port", "6889"},  // ?
           {"uploaded", "0"},
           {"downloaded", std::to_string(downloaded)},
