@@ -17,14 +17,14 @@ PiecesManager::PiecesManager(std::string file, size_t file_length, size_t piece_
   //
   // for example, if we have a file of size 34, piece_length equals 10, and block_length equals 3,
   // then _missing should contain...
-  //     ---------------------------------------
+  //     +-------------------------------------+
   //     |    10    |    10    |    10    | 4  |
-  //     ---------------------------------------
+  //     +-------------------------------------+
   //        piece0     piece1     piece2   piece4 (fragment)
   //          ^          ^          ^          ^
-  // ------------  ------------  ------------  ------
+  // +----------+  +----------+  +----------+  +----+
   // | 3| 3| 3|1|  | 3| 3| 3|1|  | 3| 3| 3|1|  | 3|1|
-  // ------------  ------------  ------------  ------
+  // +----------+  +----------+  +----------+  +----+
   //  blocks0-3     blocks0-3     blocks0-3   blocks0-1
   //
   for (size_t idx = 0; idx < std::ceil(static_cast<double>(file_length) / piece_length); idx++) {
