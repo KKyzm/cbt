@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <filesystem>
 #include <sstream>
 #include <vector>
 
@@ -10,8 +11,11 @@
 
 constexpr size_t BLOCK_SIZE = 1 << 14;
 
-PiecesManager::PiecesManager(std::string file, size_t file_length, size_t piece_length, std::shared_ptr<std::vector<std::string>> piece_hashs)
-    : _file(file, std::ios::out | std::ios::binary), _file_length(file_length), _piece_length(piece_length), _piece_hashs(piece_hashs) {
+PiecesManager::PiecesManager(std::string output_dir, std::string file, size_t file_length, size_t piece_length, const std::vector<std::string> &piece_hashs)
+    : _file(std::filesystem::path(output_dir) / file, std::ios::out | std::ios::binary),
+      _file_length(file_length),
+      _piece_length(piece_length),
+      _piece_hashs(piece_hashs) {
   // initialize _missing with all pieces' blocks
 
   //
@@ -112,24 +116,24 @@ void PiecesManager::block_recieved(std::string peer_id, size_t piece_idx, size_t
 
 void PiecesManager::piece_recieved(size_t piece_idx) {
   // put blocks together
-  auto block_buf = std::stringstream{};
+  auto block_buf = std::string{};
   auto offset_cur = size_t{0};  // initial block offset
   auto blocks = _reveived[piece_idx];
   for (auto [offset, data] : blocks) {
     assert(offset_cur == offset);
-    block_buf << data;
+    block_buf += data;
     offset_cur += offset;
   }
 
   // validation
-  if (SHA1(block_buf.str()) != _piece_hashs->at(piece_idx)) {
+  if (SHA1(block_buf) != _piece_hashs.at(piece_idx)) {
     // validation fails, give blocks back to _missing
     _missing[piece_idx] = blocks_of(piece_idx);
-    return;
+  } else {
+    // validation succeeds, write validated piece into file
+    _file.seekp(piece_idx * _piece_length);
+    _file << block_buf;
   }
-  // write validated piece into file
-  _file.seekp(piece_idx * _piece_length);
-  _file << block_buf.str();
 }
 
 auto PiecesManager::blocks_of(size_t piece_idx) -> std::queue<Block> {

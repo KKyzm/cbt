@@ -22,4 +22,5 @@ class ConnectionWrapper {
   auto connect_to(std::string ip, uint16_t port) -> int;
 };
 
-auto htoi(std::string str) -> size_t;
+// convert integer of network byte order to little endian
+auto ntoi(std::string str) -> size_t;

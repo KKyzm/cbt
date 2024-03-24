@@ -13,8 +13,24 @@
 template <typename T>
 class SharedQueue {
  public:
-  SharedQueue();
-  ~SharedQueue();
+  SharedQueue() = default;
+  ~SharedQueue() = default;
+
+  SharedQueue(SharedQueue&& q) {
+    if (this == &q) return;
+    std::unique_lock<std::mutex> mlock(mutex_);
+    queue_ = q.queue_;
+    mutex_ = q.mutex_;
+    cond_ = q.cond_;
+  }
+
+  auto operator=(SharedQueue&& q) -> SharedQueue& {
+    if (this == &q) return;
+    std::unique_lock<std::mutex> mlock(mutex_);
+    queue_ = q.queue_;
+    mutex_ = q.mutex_;
+    cond_ = q.cond_;
+  }
 
   auto front() -> T&;
   auto pop_front() -> T&;
@@ -31,12 +47,6 @@ class SharedQueue {
   std::mutex mutex_;
   std::condition_variable cond_;
 };
-
-template <typename T>
-SharedQueue<T>::SharedQueue() = default;
-
-template <typename T>
-SharedQueue<T>::~SharedQueue() = default;
 
 template <typename T>
 auto SharedQueue<T>::front() -> T& {

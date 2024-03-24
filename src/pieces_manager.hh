@@ -18,7 +18,8 @@ struct Block {
 
 class PiecesManager {
  public:
-  explicit PiecesManager(std::string file, size_t file_length, size_t piece_length, std::shared_ptr<std::vector<std::string>> piece_hashs);
+  PiecesManager() = delete;
+  explicit PiecesManager(std::string output_dir, std::string file, size_t file_length, size_t piece_length, const std::vector<std::string>& piece_hashs);
 
   // register peer with its bitfield
   void peer_add(std::string peer_id, std::string bitfield);
@@ -38,10 +39,16 @@ class PiecesManager {
   // whether all pieces are correctly recieved
   auto finished() -> bool { return _missing.empty() && _requesting.empty(); }
 
+  auto downloaded() -> size_t {
+    // TODO: return total downloaded amount
+    return 0;
+  }
+
  private:
   size_t _file_length;
   size_t _piece_length;
-  std::shared_ptr<std::vector<std::string>> _piece_hashs;
+  const std::vector<std::string>& _piece_hashs;
+  std::string output_dir;
   std::ofstream _file;
 
   std::mutex mtx{};

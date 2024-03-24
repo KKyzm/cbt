@@ -57,7 +57,7 @@ class PeerConnection {
   Peer _peer;                                // current connected peer
   std::string _peer_id;                      // id of connected peer
   ConnectionStatus _status;                  // current connection status
-  std::unique_ptr<ConnectionWrapper> _conn;  // wrapper help functions of current connection
+  std::unique_ptr<ConnectionWrapper> _conn;  // wrapper of current connection
 
   // Start a peer connection, and return whether successful or not,
   // a start of a connection includes:

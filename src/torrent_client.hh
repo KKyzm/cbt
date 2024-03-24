@@ -8,7 +8,6 @@
 struct ClientConfig {
   std::string torrent_file;
   std::string output_dir;
-  std::string log_dir;
 };
 
 class TorrentClient {
@@ -24,11 +23,10 @@ class TorrentClient {
   void download();
 
  private:
-  std::string _client_id;
   ClientConfig _conf;
   Torrent _torrent;
 
-  PeerRetriever _retriever;
+  static const std::string _client_id;
 
   // update peers periodically according to `interval`
   void PeerUpdater();

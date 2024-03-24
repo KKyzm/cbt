@@ -12,6 +12,3 @@ auto SHA1(const std::string &data) -> std::string;
 
 // convert string to hex repersenation
 auto to_hex(const std::string data) -> std::string;
-
-// genrate random numbers
-auto random_number(const size_t length) -> std::string;

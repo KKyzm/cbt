@@ -1,6 +1,7 @@
 #include "peer_connection.hh"
 
 #include <netinet/in.h>
+#include <spdlog/spdlog.h>
 
 #include <cassert>
 #include <cstddef>
@@ -15,17 +16,17 @@ void PeerConnection::start() {
     try {
       // reset connection parameters and restart connection
       _conn.release();
+      _status = {};
       _peer_id = "";
       _peer = _queue->pop_front();
-      if (_peer.ip == DUMMY_IP) {
-        break;
-      }
-      _status = {};
+      if (_peer.ip == DUMMY_IP) break;
       establish_peer_connection();
 
       auto request_pending = false;
+
       // get next block to request
       auto block = _pieces_manager->next_request(_peer_id);
+
       // loop of request and receive
       while (!_pieces_manager->finished()) {
         auto msg = recieve_message();
@@ -35,8 +36,8 @@ void PeerConnection::start() {
         } else if (type == msg_type::unchoke) {
           _status.choked = false;
         } else if (type == msg_type::piece) {
-          auto piece_idx = htoi(msg.payload.substr(0, 4));
-          auto offset = htoi(msg.payload.substr(4, 4));
+          auto piece_idx = ntoi(msg.payload.substr(0, 4));
+          auto offset = ntoi(msg.payload.substr(4, 4));
           auto block_data = msg.payload.substr(8);
           // data recieved should be consist with requested block
           assert(piece_idx == block.piece_idx);
@@ -45,9 +46,10 @@ void PeerConnection::start() {
           _pieces_manager->block_recieved(_peer_id, piece_idx, offset, msg.payload);
           request_pending = false;
         } else if (type == msg_type::have) {
-          auto piece_idx = htoi(msg.payload);
+          auto piece_idx = ntoi(msg.payload);
           _pieces_manager->peer_update(_peer_id, piece_idx);
         }
+        // at any time, at most one block is requested
         if (!_status.choked && _status.interested && !request_pending) {
           request(block);
           request_pending = true;
@@ -55,17 +57,18 @@ void PeerConnection::start() {
         }
       }
     } catch (std::runtime_error &e) {
+      spdlog::error(e.what());
+      spdlog::error("Error in connection with peer [" + _peer.ip + ":" + std::to_string(_peer.port) + "]: ");
       _pieces_manager->peer_del(_peer_id);
-      // FIX: don't throw exception, cause it will terminate the whole process, log instead
-      throw std::runtime_error("Error in connection with peer [" + _peer.ip + ":" + std::to_string(_peer.port) + "]: " + e.what());
     }
-  }
+  }  // while loop
 }
 
 void PeerConnection::establish_peer_connection() {
   try {
     _conn = make_unique<ConnectionWrapper>(_peer.ip, _peer.port);
   } catch (std::runtime_error &e) {
+    spdlog::error(e.what());
     throw std::runtime_error("Failed to connect to peer");
   }
 
@@ -74,6 +77,7 @@ void PeerConnection::establish_peer_connection() {
     receive_bitfield();
     send_interested();
   } catch (std::runtime_error &e) {
+    spdlog::error(e.what());
     throw std::runtime_error("Failed at preparation work before request");
   }
 }
@@ -83,7 +87,7 @@ void PeerConnection::perform_handshake() {
   auto shake_send = serialize_handshake({.info_hash = _info_hash, .peer_id = _client_id});
   _conn->send_data(shake_send);
   // receive handshake
-  // WARNING: hard code, pstr may different
+  // WARNING: hard code, pstr may different, so handshake length may different
   auto shake_reply = deserialize_handshake(_conn->recv_data(shake_send.length()));
   _peer_id = shake_reply.peer_id;
   if (shake_reply.info_hash != _info_hash) {

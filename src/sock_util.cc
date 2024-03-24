@@ -42,11 +42,11 @@ void ConnectionWrapper::send_data(const std::string &data) {
 
 auto ConnectionWrapper::recv_data(size_t buf_size) -> std::string {
   if (buf_size == 0) {
-    buf_size = htoi(recv_data(4));
+    buf_size = ntoi(recv_data(4));
+    if (buf_size == 0) return {};
   }
 
   auto reply = std::string{};
-  if (buf_size == 0) return reply;
 
   // code below mainly from https://github.com/ss16118/torrent-client-cpp/blob/main/src/connect.cpp
   // If the buffer size is greater than uint16_t max, a segfault will occur when initializing the buffer (remaining
@@ -78,7 +78,7 @@ auto ConnectionWrapper::recv_data(size_t buf_size) -> std::string {
   return reply;
 }
 
-auto htoi(std::string str) -> size_t {
+auto ntoi(std::string str) -> size_t {
   auto res = size_t{0};
   for (auto c : str) {
     res += c;

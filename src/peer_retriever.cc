@@ -9,11 +9,13 @@
 #include <string>
 
 #include "bencode_parser.hh"
+#include "shared_queue.hh"
 
 PeerRetriever::PeerRetriever(std::string announce, std::string info_hash, std::string client_id, size_t file_size)
     : _announce(announce), _info_hash(info_hash), _client_id(client_id), _file_size(file_size) {}
 
-auto PeerRetriever::update_peers(size_t downloaded) -> std::vector<Peer> {
+auto PeerRetriever::update_peers(size_t downloaded) -> SharedQueue<Peer> {
+  if (_announce.empty()) return {};
   cpr::Response r = cpr::Get(
       cpr::Url{_announce}, cpr::Authentication{"user", "pass", cpr::AuthMode::BASIC},
       cpr::Parameters{
@@ -31,18 +33,16 @@ auto PeerRetriever::update_peers(size_t downloaded) -> std::vector<Peer> {
   return decode_raw_peers(raw_peers);
 }
 
-auto PeerRetriever::decode_raw_peers(std::string raw_peers) -> std::vector<Peer> {
-  auto res = std::vector<Peer>();
+auto PeerRetriever::decode_raw_peers(std::string raw_peers) -> SharedQueue<Peer> {
+  auto res = SharedQueue<Peer>();
   assert(raw_peers.length() % 6 == 0);
   for (size_t i = 0; i < raw_peers.length(); i += 6) {
     auto peer = Peer();
     auto raw_peer = raw_peers.substr(i, 6);
     // extract ip
     auto ss = std::stringstream();
-    ss << std::to_string(static_cast<unsigned char>(raw_peer[0])) << "."
-       << std::to_string(static_cast<unsigned char>(raw_peer[1])) << "."
-       << std::to_string(static_cast<unsigned char>(raw_peer[2])) << "."
-       << std::to_string(static_cast<unsigned char>(raw_peer[3]));
+    ss << std::to_string(static_cast<unsigned char>(raw_peer[0])) << "." << std::to_string(static_cast<unsigned char>(raw_peer[1])) << "."
+       << std::to_string(static_cast<unsigned char>(raw_peer[2])) << "." << std::to_string(static_cast<unsigned char>(raw_peer[3]));
     peer.ip = ss.str();
     // extract port
     auto port = uint16_t{0};

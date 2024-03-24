@@ -22,13 +22,16 @@ file(GLOB_RECURSE lib_srcs CONFIGURE_DEPENDS
   src/bencode_parser.cc
   src/util.cc
 )
-add_executable(cbt STATIC ${lib_srcs})
+add_executable(cbt ${lib_srcs})
 # link bencode to cbt
 target_link_libraries(cbt PUBLIC bencode::bencode)
-target_include_directories(cbt_lib PUBLIC src/)
+target_include_directories(cbt PUBLIC src/)
 # link cryptopp to cbt
 find_package(cryptopp CONFIG REQUIRED)
 target_link_libraries(cbt PRIVATE cryptopp::cryptopp)
 # link cpr to cbt
 find_package(cpr CONFIG REQUIRED)
 target_link_libraries(cbt PRIVATE cpr::cpr)
+# link spdlog to cbt
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(cbt PRIVATE spdlog::spdlog)

@@ -16,6 +16,9 @@
     {
       "name": "cpr",
       "version>=": "1.10.5"
+    },
+    {
+      "name": "spdlog"
     }
   ]
 }

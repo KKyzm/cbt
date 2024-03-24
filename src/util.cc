@@ -31,14 +31,3 @@ auto to_hex(const std::string data) -> std::string {
   }
   return ss.str();
 }
-
-auto random_number(const size_t length) -> std::string {
-  std::random_device rd;   // Will be used to obtain a seed for the random number engine
-  std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
-  std::uniform_int_distribution<> distrib(1, 9);
-  auto res = std::string();
-  for (size_t i = 0; i < length; i++) {
-    res += std::to_string(distrib(gen));
-  }
-  return res;
-}
