@@ -14,8 +14,7 @@
       "name": "cryptopp"
     },
     {
-      "name": "cpr",
-      "version>=": "1.10.5"
+      "name": "cpr"
     },
     {
       "name": "spdlog"
