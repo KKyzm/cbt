@@ -133,16 +133,17 @@ void PiecesManager::piece_recieved(size_t piece_idx) {
     // validation succeeds, write validated piece into file
     _file.seekp(piece_idx * _piece_length);
     _file << block_buf;
+    _downloaded += block_buf.length();
   }
 }
 
 auto PiecesManager::blocks_of(size_t piece_idx) -> std::queue<Block> {
-  static auto normal_piece_num = _file_length / _piece_length;     // number of pieces that has normal size (piece_length)
-  static auto fragment_piece_size = _file_length % _piece_length;  // size of last piece
-  assert(fragment_piece_size > 0);
+  static auto fragment_piece_size = _file_length % _piece_length;                                    // size of last piece
+  static auto normal_piece_num = _file_length / _piece_length + (fragment_piece_size == 0 ? 1 : 0);  // number of pieces that has normal size (piece_length)
   if (piece_idx < normal_piece_num) {
     return blocks_of(piece_idx, _piece_length);
   } else {
+    assert(fragment_piece_size > 0);
     return blocks_of(piece_idx, fragment_piece_size);
   }
 }

@@ -6,8 +6,6 @@
 #include <cstdint>
 #include <string>
 
-const std::string DUMMY_IP = "0.0.0.0";
-
 class ConnectionWrapper {
  public:
   ConnectionWrapper(std::string ip, uint16_t port) { _sock = connect_to(ip, port); }

@@ -15,18 +15,15 @@ inline void init_logger(const std::string& path = "logs/cbt.log") {
   try {
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::warn);
-    console_sink->set_pattern("[%H:%M:%S %z] [%^%L%$] [thread %t] %v");
+    console_sink->set_pattern("[%M:%S %z] [%^%L%$] [thread %t] %v");
 
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path, true);
     file_sink->set_level(spdlog::level::trace);
 
-    spdlog::sinks_init_list sink_list = {file_sink, console_sink};
-
-    spdlog::logger logger("multi_sink", sink_list.begin(), sink_list.end());
-    logger.set_level(spdlog::level::debug);
-
     // set multi_sink logger as default logger
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>("multi_sink", spdlog::sinks_init_list({console_sink, file_sink})));
+    auto default_logger = std::make_shared<spdlog::logger>("multi_sink", spdlog::sinks_init_list({console_sink, file_sink}));
+    default_logger->flush_on(spdlog::level::trace);
+    spdlog::set_default_logger(default_logger);
 
   } catch (const spdlog::spdlog_ex& ex) {
     using namespace std::string_literals;

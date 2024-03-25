@@ -16,22 +16,6 @@ class SharedQueue {
   SharedQueue() = default;
   ~SharedQueue() = default;
 
-  SharedQueue(SharedQueue&& q) {
-    if (this == &q) return;
-    std::unique_lock<std::mutex> mlock(mutex_);
-    queue_ = q.queue_;
-    mutex_ = q.mutex_;
-    cond_ = q.cond_;
-  }
-
-  auto operator=(SharedQueue&& q) -> SharedQueue& {
-    if (this == &q) return;
-    std::unique_lock<std::mutex> mlock(mutex_);
-    queue_ = q.queue_;
-    mutex_ = q.mutex_;
-    cond_ = q.cond_;
-  }
-
   auto front() -> T&;
   auto pop_front() -> T&;
 
@@ -42,9 +26,10 @@ class SharedQueue {
   auto size() -> size_t;
   auto empty() -> bool;
 
+  std::mutex mutex_;
+
  private:
   std::deque<T> queue_;
-  std::mutex mutex_;
   std::condition_variable cond_;
 };
 

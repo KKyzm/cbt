@@ -39,10 +39,7 @@ class PiecesManager {
   // whether all pieces are correctly recieved
   auto finished() -> bool { return _missing.empty() && _requesting.empty(); }
 
-  auto downloaded() -> size_t {
-    // TODO: return total downloaded amount
-    return 0;
-  }
+  auto downloaded() -> size_t { return _downloaded; }
 
  private:
   size_t _file_length;
@@ -52,6 +49,8 @@ class PiecesManager {
   std::ofstream _file;
 
   std::mutex mtx{};
+
+  size_t _downloaded{0};
 
   // bitfield of each registered peer
   std::map<std::string, std::set<size_t>> _bitfields{};

@@ -13,7 +13,7 @@ class PeerRetriever {
   PeerRetriever() = delete;
   PeerRetriever(std::string announce, std::string info_hash, std::string client_id, size_t file_size);
 
-  auto update_peers(size_t downloaded) -> SharedQueue<Peer>;
+  auto update_peers(size_t downloaded) -> std::vector<Peer>;
 
   auto get_interval() -> size_t { return _interval; }
 
@@ -25,5 +25,5 @@ class PeerRetriever {
 
   size_t _interval;  // unit: second
 
-  auto decode_raw_peers(std::string raw_peers) -> SharedQueue<Peer>;
+  auto decode_raw_peers(std::string raw_peers) -> std::vector<Peer>;
 };

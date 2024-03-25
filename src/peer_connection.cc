@@ -4,11 +4,14 @@
 #include <spdlog/spdlog.h>
 
 #include <cassert>
+#include <chrono>
 #include <cstddef>
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
+#include "peer.hh"
 #include "sock_util.hh"
 
 void PeerConnection::start() {
@@ -18,14 +21,23 @@ void PeerConnection::start() {
       _conn.release();
       _status = {};
       _peer_id = "";
+      if (_queue->empty()) {
+        std::this_thread::sleep_for(std::chrono::duration<int>(1));
+        continue;
+      }
       _peer = _queue->pop_front();
-      if (_peer.ip == DUMMY_IP) break;
+      if (_peer.ip == DUMMY_IP) {
+        return;
+      }
       establish_peer_connection();
 
       auto request_pending = false;
 
       // get next block to request
       auto block = _pieces_manager->next_request(_peer_id);
+      if (block.length == 0) {
+        return;
+      }
 
       // loop of request and receive
       while (!_pieces_manager->finished()) {
